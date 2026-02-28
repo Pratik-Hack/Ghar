@@ -25,7 +25,9 @@ export default function FamilyRoulette() {
 
     const extraSpins = 5 + Math.floor(Math.random() * 3);
     const randomMemberIdx = Math.floor(Math.random() * members.length);
-    const targetAngle = extraSpins * 360 + randomMemberIdx * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+    // Pointer is at top (270° in SVG coords). Calculate rotation so the correct segment lands under it.
+    const segmentCenter = randomMemberIdx * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+    const targetAngle = extraSpins * 360 + ((270 - segmentCenter) % 360 + 360) % 360;
 
     setRotation((prev) => prev + targetAngle);
 

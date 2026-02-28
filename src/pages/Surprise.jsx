@@ -4,7 +4,6 @@ import { useTheme } from "../context/ThemeContext";
 import { usePhotos } from "../context/PhotoContext";
 import { useMusic } from "../context/MusicContext";
 import { getRandomQuote, familyMembers } from "../data/familyData";
-import { getAllSongs } from "../data/musicData";
 import FamilyRoulette from "../components/FamilyRoulette";
 import PhotoModal from "../components/PhotoModal";
 import { FiRefreshCw, FiHeart, FiMusic, FiStar } from "react-icons/fi";
@@ -12,15 +11,16 @@ import { FiRefreshCw, FiHeart, FiMusic, FiStar } from "react-icons/fi";
 export default function Surprise() {
   const { nightMode } = useTheme();
   const { getRandomPhoto, photos } = usePhotos();
-  const { playSong } = useMusic();
+  const { playSong, playlists } = useMusic();
   const [surprise, setSurprise] = useState(null);
   const [showRoulette, setShowRoulette] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   const generateSurprise = () => {
     const photo = getRandomPhoto();
-    const allSongs = getAllSongs();
-    const song = allSongs[Math.floor(Math.random() * allSongs.length)];
+    // Get all songs from Firestore playlists (not hardcoded file)
+    const allSongs = Object.values(playlists).flatMap((pl) => pl.songs || []);
+    const song = allSongs.length > 0 ? allSongs[Math.floor(Math.random() * allSongs.length)] : null;
     const quote = getRandomQuote();
 
     setSurprise({ photo, song, quote });

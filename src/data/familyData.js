@@ -1,7 +1,7 @@
 export const familyMembers = {
   mother: {
     id: "mother",
-    name: "Mammy",
+    name: "Mummy",
     nameEnglish: "Mother",
     relation: "Mother",
     emoji: "🙏",
@@ -93,7 +93,7 @@ export const familyQuotes = [
   "Together is our favorite place to be",
   "Family means nobody gets left behind or forgotten",
   "Apna ghar, apne log — isse zyada kya chahiye?",
-  "Mammy ka pyaar, Pappa ki strength, Adi ki dosti — perfect family ❤️",
+  "Mummy ka pyaar, Pappa ki strength, Adi ki dosti — perfect family ❤️",
 ];
 
 export const occasions = [
@@ -120,7 +120,7 @@ export function getGreeting() {
 
 export function getMemberGreeting(memberId) {
   const greetings = {
-    mother: "Mammy... the reason everything feels like home 🙏",
+    mother: "Mummy... the reason everything feels like home 🙏",
     father: "Pappa — our silent superhero 💪",
     sister: "Adi — forever partner in crime 👫",
     me: "Pratik — missing home from Pune 🏙️",
