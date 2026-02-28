@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm install -D tailwindcss @tailwindcss/vite)",
+      "Bash(npm install react-router-dom framer-motion react-icons react-dropzone localforage)",
+      "WebFetch(domain:www.youtube.com)"
+    ]
+  }
+}
