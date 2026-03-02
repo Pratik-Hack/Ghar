@@ -12,16 +12,19 @@ export function MusicProvider({ children }) {
   const [currentSong, setCurrentSong] = useState(null);
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(70);
   const [shuffle, setShuffle] = useState(false);
   const [repeat, setRepeat] = useState(false);
   const [playerReady, setPlayerReady] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const playerRef = useRef(null);
   const handleNextRef = useRef(null);
   const volumeRef = useRef(volume);
   const isMutedRef = useRef(isMuted);
+  const timeIntervalRef = useRef(null);
 
   useEffect(() => { volumeRef.current = volume; }, [volume]);
   useEffect(() => { isMutedRef.current = isMuted; }, [isMuted]);
@@ -65,6 +68,7 @@ export function MusicProvider({ children }) {
       document.body.appendChild(container);
     }
     return () => {
+      if (timeIntervalRef.current) clearInterval(timeIntervalRef.current);
       if (playerRef.current) {
         try { playerRef.current.destroy(); } catch (e) { /* ignore */ }
         playerRef.current = null;
@@ -124,9 +128,23 @@ export function MusicProvider({ children }) {
           event.target.setVolume(volumeRef.current);
           if (isMutedRef.current) event.target.mute();
           else event.target.unMute();
+          setDuration(event.target.getDuration() || 0);
+          // Start time tracking
+          if (timeIntervalRef.current) clearInterval(timeIntervalRef.current);
+          timeIntervalRef.current = setInterval(() => {
+            try {
+              const player = playerRef.current;
+              if (player && player.getCurrentTime) {
+                setCurrentTime(player.getCurrentTime());
+                const dur = player.getDuration();
+                if (dur > 0) setDuration(dur);
+              }
+            } catch (e) { /* ignore */ }
+          }, 500);
         },
         onStateChange: (event) => {
           if (event.data === window.YT.PlayerState.ENDED) {
+            if (timeIntervalRef.current) clearInterval(timeIntervalRef.current);
             if (handleNextRef.current) handleNextRef.current();
           }
         },
@@ -193,6 +211,14 @@ export function MusicProvider({ children }) {
     if (playerRef.current) {
       try { playerRef.current.setVolume(newVolume); } catch (e) { /* ignore */ }
     }
+  }, []);
+
+  const seekTo = useCallback((seconds) => {
+    if (!playerRef.current) return;
+    try {
+      playerRef.current.seekTo(seconds, true);
+      setCurrentTime(seconds);
+    } catch (e) { /* ignore */ }
   }, []);
 
   const handleNext = useCallback(() => {
@@ -289,6 +315,9 @@ export function MusicProvider({ children }) {
         togglePlay,
         toggleMute,
         changeVolume,
+        seekTo,
+        currentTime,
+        duration,
         handleNext,
         handlePrev,
         setShuffle,

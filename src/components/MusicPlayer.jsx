@@ -12,11 +12,25 @@ export default function MusicPlayer() {
   const {
     currentSong, currentPlaylist, isPlaying, isMuted, volume,
     shuffle, repeat, showPlayer, playSong,
-    togglePlay, toggleMute, changeVolume, handleNext, handlePrev,
+    togglePlay, toggleMute, changeVolume, seekTo,
+    currentTime, duration, handleNext, handlePrev,
     setShuffle, setRepeat, playlists,
   } = useMusic();
   const { nightMode } = useTheme();
   const [expanded, setExpanded] = useState(false);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const handleSeek = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, x / rect.width));
+    seekTo(pct * duration);
+  };
 
   if (!showPlayer) return null;
 
@@ -98,6 +112,36 @@ export default function MusicPlayer() {
         </div>
       )}
 
+      {/* Seek bar */}
+      {currentSong && duration > 0 && (
+        <div className="px-4 max-w-2xl mx-auto pt-2 pb-0.5">
+          <div
+            className={`relative h-1 rounded-full cursor-pointer group ${
+              nightMode ? "bg-white/10" : "bg-black/8"
+            }`}
+            onClick={handleSeek}
+          >
+            <div
+              className="h-full rounded-full relative transition-[width] duration-300 ease-linear"
+              style={{
+                width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
+                background: "linear-gradient(90deg, #FF6F61, #FF9A76)",
+              }}
+            >
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white shadow-sm scale-0 group-hover:scale-100 transition-transform duration-150" />
+            </div>
+          </div>
+          <div className="flex justify-between mt-1">
+            <span className={`text-[10px] tabular-nums ${nightMode ? "text-warm-500/70" : "text-warm-400/70"}`}>
+              {formatTime(currentTime)}
+            </span>
+            <span className={`text-[10px] tabular-nums ${nightMode ? "text-warm-500/70" : "text-warm-400/70"}`}>
+              {formatTime(duration)}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Mini player bar */}
       <div className="px-4 py-3 max-w-2xl mx-auto">
         <div className="flex items-center gap-3">
@@ -134,15 +178,15 @@ export default function MusicPlayer() {
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
               onClick={() => setShuffle(!shuffle)}
-              className={`p-1.5 rounded-full transition-all hidden sm:block ${
+              className={`p-2 rounded-full transition-all ${
                 shuffle
-                  ? "text-sunset"
+                  ? "text-sunset bg-sunset/15"
                   : nightMode
                   ? "text-warm-500 hover:text-warm-300"
                   : "text-warm-400 hover:text-warm-600"
               }`}
             >
-              <FiShuffle size={14} />
+              <FiShuffle size={16} />
             </button>
 
             <button
@@ -176,15 +220,15 @@ export default function MusicPlayer() {
 
             <button
               onClick={() => setRepeat(!repeat)}
-              className={`p-1.5 rounded-full transition-all hidden sm:block ${
+              className={`p-2 rounded-full transition-all ${
                 repeat
-                  ? "text-sunset"
+                  ? "text-sunset bg-sunset/15"
                   : nightMode
                   ? "text-warm-500 hover:text-warm-300"
                   : "text-warm-400 hover:text-warm-600"
               }`}
             >
-              <FiRepeat size={14} />
+              <FiRepeat size={16} />
             </button>
 
             <button
