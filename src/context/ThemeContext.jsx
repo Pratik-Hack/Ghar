@@ -1,29 +1,33 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { isNightMode, getCurrentFestival } from "../data/musicData";
 
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  const [nightMode, setNightMode] = useState(false);
+  const [nightMode, setNightMode] = useState(() => {
+    const saved = localStorage.getItem("ghar-nightMode");
+    if (saved !== null) return saved === "true";
+    return isNightMode();
+  });
   const [festival, setFestival] = useState(null);
+  const userToggled = useRef(localStorage.getItem("ghar-nightMode") !== null);
 
   useEffect(() => {
-    // Check time-based theme
-    const checkTheme = () => {
-      const night = isNightMode();
-      setNightMode(night);
-      if (night) {
-        document.body.classList.add("night-mode");
-      } else {
-        document.body.classList.remove("night-mode");
+    // Apply on mount
+    if (nightMode) document.body.classList.add("night-mode");
+    else document.body.classList.remove("night-mode");
+    setFestival(getCurrentFestival());
+
+    // Only auto-switch if user hasn't manually toggled
+    const interval = setInterval(() => {
+      if (!userToggled.current) {
+        const night = isNightMode();
+        setNightMode(night);
+        if (night) document.body.classList.add("night-mode");
+        else document.body.classList.remove("night-mode");
       }
-
-      const fest = getCurrentFestival();
-      setFestival(fest);
-    };
-
-    checkTheme();
-    const interval = setInterval(checkTheme, 60000); // check every minute
+      setFestival(getCurrentFestival());
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -32,6 +36,8 @@ export function ThemeProvider({ children }) {
       const next = !prev;
       if (next) document.body.classList.add("night-mode");
       else document.body.classList.remove("night-mode");
+      localStorage.setItem("ghar-nightMode", String(next));
+      userToggled.current = true;
       return next;
     });
   };

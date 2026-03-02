@@ -21,10 +21,16 @@ export const playlists = {
     color: "#9C27B0",
     songs: [],
   },
+  pratik: {
+    name: "Pratik - My Vibes",
+    emoji: "🙋‍♂️",
+    color: "#FF6F00",
+    songs: [],
+  },
   family: {
     name: "Family / Home",
     emoji: "🏠",
-    color: "#FF6F00",
+    color: "#4CAF50",
     songs: [],
   },
   missingHome: {
@@ -92,6 +98,6 @@ export function getSongById(id) {
 }
 
 export function getPlaylistForMember(member) {
-  const map = { mother: "maa", father: "papa", sister: "sister", me: "family" };
+  const map = { mother: "maa", father: "papa", sister: "sister", me: "pratik" };
   return map[member] || "family";
 }

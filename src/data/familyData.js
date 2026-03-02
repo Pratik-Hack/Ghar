@@ -68,7 +68,7 @@ export const familyMembers = {
     color: "#FF6F00",
     gradientFrom: "#FF6F00",
     gradientTo: "#FFB74D",
-    playlist: "family",
+    playlist: "pratik",
     tagline: "Dreaming from Pune, heart in Kolhapur",
     bio: "Living in Pune, chasing dreams, but my heart always stays in Kolhapur with family.",
     quotes: [

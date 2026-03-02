@@ -168,7 +168,7 @@ export default function Upload() {
                       e.stopPropagation();
                       removeFile(f.id);
                     }}
-                    className="absolute top-1 right-1 p-1 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1 right-1 p-1.5 rounded-full bg-black/50 text-white sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   >
                     <FiX size={14} />
                   </button>

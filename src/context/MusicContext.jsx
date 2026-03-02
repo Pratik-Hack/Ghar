@@ -44,6 +44,15 @@ export function MusicProvider({ children }) {
           snapshot.docs.forEach((doc) => {
             firestorePlaylists[doc.id] = doc.data();
           });
+          // Seed any missing playlists (e.g., newly added "pratik")
+          const missingKeys = Object.keys(hardcodedPlaylists).filter(
+            (key) => !firestorePlaylists[key]
+          );
+          if (missingKeys.length > 0) {
+            const missing = {};
+            missingKeys.forEach((key) => { missing[key] = hardcodedPlaylists[key]; });
+            seedPlaylists(missing);
+          }
           setPlaylists(firestorePlaylists);
           setPlaylistsLoading(false);
         }
@@ -157,6 +166,8 @@ export function MusicProvider({ children }) {
       setCurrentSong(song);
       setShowPlayer(true);
       setIsPlaying(true);
+      setCurrentTime(0);
+      setDuration(0);
 
       if (playlistKey && playlists[playlistKey]) {
         setCurrentPlaylist(playlistKey);
@@ -262,7 +273,7 @@ export function MusicProvider({ children }) {
     (context) => {
       if (context.startsWith("member:")) {
         const member = context.split(":")[1];
-        const map = { mother: "maa", father: "papa", sister: "sister", me: "family" };
+        const map = { mother: "maa", father: "papa", sister: "sister", me: "pratik" };
         playPlaylist(map[member] || "family");
       } else if (context === "timeline" || context === "missing") {
         playPlaylist("missingHome");

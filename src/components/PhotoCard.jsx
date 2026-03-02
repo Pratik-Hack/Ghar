@@ -48,8 +48,8 @@ export default function PhotoCard({ photo, onClick, index = 0 }) {
           />
         )}
 
-        {/* Overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {/* Overlay — always show caption on mobile, hover on desktop */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
           <div className="absolute bottom-0 left-0 right-0 p-3">
             <p className="text-white text-sm font-medium line-clamp-2">
               {photo.caption}
@@ -67,7 +67,7 @@ export default function PhotoCard({ photo, onClick, index = 0 }) {
           </div>
         </div>
 
-        {/* Favorite button */}
+        {/* Favorite button — always visible on mobile */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -76,15 +76,15 @@ export default function PhotoCard({ photo, onClick, index = 0 }) {
           className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 ${
             isFav
               ? "bg-rose-warm text-white shadow-lg"
-              : "bg-black/20 text-white opacity-0 group-hover:opacity-100 hover:bg-rose-warm"
+              : "bg-black/30 text-white sm:opacity-0 sm:group-hover:opacity-100 active:bg-rose-warm"
           }`}
         >
           <FiHeart size={14} fill={isFav ? "white" : "none"} />
         </button>
 
-        {/* Mood indicator */}
+        {/* Mood indicator — always visible on mobile */}
         {photo.mood && (
-          <span className={`absolute top-2 left-2 text-xs px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ${
+          <span className={`absolute top-2 left-2 text-xs px-2 py-0.5 rounded-full sm:opacity-0 sm:group-hover:opacity-100 transition-opacity ${
             nightMode ? "bg-warm-800/80 text-warm-200" : "bg-white/80 text-warm-700"
           }`}>
             {photo.mood}

@@ -16,17 +16,47 @@ export default function Surprise() {
   const [showRoulette, setShowRoulette] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
+  // Map photo members to playlist keys
+  const memberToPlaylist = { mother: "maa", father: "papa", sister: "sister", me: "pratik" };
+
   const generateSurprise = () => {
     const photo = getRandomPhoto();
-    // Get all songs from Firestore playlists (not hardcoded file)
-    const allSongs = Object.values(playlists).flatMap((pl) => pl.songs || []);
-    const song = allSongs.length > 0 ? allSongs[Math.floor(Math.random() * allSongs.length)] : null;
     const quote = getRandomQuote();
+
+    // Try to find a song that matches the photo's members
+    let song = null;
+    let matchedPlaylistKey = null;
+
+    if (photo && photo.members && photo.members.length > 0) {
+      // Pick a random member from the photo, find their playlist
+      const shuffledMembers = [...photo.members].sort(() => Math.random() - 0.5);
+      for (const member of shuffledMembers) {
+        const playlistKey = memberToPlaylist[member];
+        if (playlistKey && playlists[playlistKey] && playlists[playlistKey].songs?.length > 0) {
+          const songs = playlists[playlistKey].songs;
+          song = songs[Math.floor(Math.random() * songs.length)];
+          matchedPlaylistKey = playlistKey;
+          break;
+        }
+      }
+    }
+
+    // Fallback: try family, missingHome, then any playlist with songs
+    if (!song) {
+      for (const key of ["family", "missingHome", "happy", ...Object.keys(playlists)]) {
+        if (playlists[key] && playlists[key].songs?.length > 0) {
+          const songs = playlists[key].songs;
+          song = songs[Math.floor(Math.random() * songs.length)];
+          matchedPlaylistKey = key;
+          break;
+        }
+      }
+    }
 
     setSurprise({ photo, song, quote });
 
     if (song) {
-      playSong(song);
+      playSong(song, matchedPlaylistKey);
     }
   };
 

@@ -435,28 +435,28 @@ export default function ManageSongs() {
                             </p>
                           </div>
 
-                          {/* Actions */}
-                          <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all">
+                          {/* Actions — always visible on mobile */}
+                          <div className="flex items-center gap-1 flex-shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
                             <button
                               onClick={() => startEdit(song)}
-                              className={`p-2 rounded-lg transition-all ${
+                              className={`p-2.5 sm:p-2 rounded-lg transition-all ${
                                 nightMode
-                                  ? "text-warm-500 hover:text-warm-200 hover:bg-warm-800/40"
-                                  : "text-warm-400 hover:text-warm-700 hover:bg-warm-100"
+                                  ? "text-warm-500 active:text-warm-200 active:bg-warm-800/40"
+                                  : "text-warm-400 active:text-warm-700 active:bg-warm-100"
                               }`}
                               title="Edit song"
                             >
-                              <FiEdit2 size={14} />
+                              <FiEdit2 size={16} />
                             </button>
                             <button
                               onClick={() => handleRemoveSong(song)}
                               disabled={removing === song.id}
-                              className={`p-2 rounded-lg transition-all ${
+                              className={`p-2.5 sm:p-2 rounded-lg transition-all ${
                                 removing === song.id
                                   ? "opacity-100"
                                   : nightMode
-                                  ? "text-warm-500 hover:text-red-400 hover:bg-red-900/20"
-                                  : "text-warm-400 hover:text-red-500 hover:bg-red-50"
+                                  ? "text-warm-500 active:text-red-400 active:bg-red-900/20"
+                                  : "text-warm-400 active:text-red-500 active:bg-red-50"
                               }`}
                               title="Remove song"
                             >
@@ -465,10 +465,10 @@ export default function ManageSongs() {
                                   animate={{ rotate: 360 }}
                                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                                 >
-                                  <FiMusic size={14} />
+                                  <FiMusic size={16} />
                                 </motion.span>
                               ) : (
-                                <FiTrash2 size={14} />
+                                <FiTrash2 size={16} />
                               )}
                             </button>
                           </div>
