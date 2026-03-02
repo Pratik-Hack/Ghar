@@ -232,28 +232,52 @@ export function MusicProvider({ children }) {
     } catch (e) { /* ignore */ }
   }, []);
 
-  const handleNext = useCallback(() => {
-    if (!currentPlaylist || !playlists[currentPlaylist]) return;
-    const songs = playlists[currentPlaylist].songs;
-    if (!songs || songs.length === 0) return;
-
-    const currentIdx = songs.findIndex((s) => s.id === currentSong?.id);
-
-    if (shuffle) {
-      let nextIdx;
-      do {
-        nextIdx = Math.floor(Math.random() * songs.length);
-      } while (nextIdx === currentIdx && songs.length > 1);
-      playSong(songs[nextIdx], currentPlaylist);
-    } else {
-      const nextIdx = (currentIdx + 1) % songs.length;
-      if (nextIdx === 0 && !repeat) {
-        setIsPlaying(false);
-        return;
+  // Pick a random song from any playlist (excluding current song)
+  const getRandomSongFromAll = useCallback(() => {
+    const allEntries = [];
+    Object.entries(playlists).forEach(([key, pl]) => {
+      if (pl.songs && pl.songs.length > 0) {
+        pl.songs.forEach((song) => allEntries.push({ song, playlistKey: key }));
       }
-      playSong(songs[nextIdx], currentPlaylist);
+    });
+    if (allEntries.length === 0) return null;
+    // Filter out current song to avoid repeat
+    const filtered = allEntries.filter((e) => e.song.id !== currentSong?.id);
+    const pool = filtered.length > 0 ? filtered : allEntries;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }, [playlists, currentSong]);
+
+  const handleNext = useCallback(() => {
+    const songs = currentPlaylist && playlists[currentPlaylist]?.songs;
+
+    // Try playing next from current playlist
+    if (songs && songs.length > 1) {
+      const currentIdx = songs.findIndex((s) => s.id === currentSong?.id);
+
+      if (shuffle) {
+        let nextIdx;
+        do {
+          nextIdx = Math.floor(Math.random() * songs.length);
+        } while (nextIdx === currentIdx);
+        playSong(songs[nextIdx], currentPlaylist);
+        return;
+      } else {
+        const nextIdx = (currentIdx + 1) % songs.length;
+        if (nextIdx !== 0 || repeat) {
+          playSong(songs[nextIdx], currentPlaylist);
+          return;
+        }
+      }
     }
-  }, [currentPlaylist, currentSong, shuffle, repeat, playSong, playlists]);
+
+    // Current playlist exhausted or has only 1 song — pick random from all playlists
+    const random = getRandomSongFromAll();
+    if (random) {
+      playSong(random.song, random.playlistKey);
+    } else {
+      setIsPlaying(false);
+    }
+  }, [currentPlaylist, currentSong, shuffle, repeat, playSong, playlists, getRandomSongFromAll]);
 
   useEffect(() => {
     handleNextRef.current = handleNext;
